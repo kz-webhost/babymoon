@@ -1,0 +1,30 @@
+name: 수정 요청
+description: 사이트 내용 수정이나 추가를 요청해요
+title: "[수정요청] "
+labels: ["수정요청"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: 어느 페이지인가요?
+      description: 페이지의 "수정 요청하기" 버튼으로 오면 자동으로 채워져요.
+      placeholder: 예) 교토 호텔 후보 지도
+    validations:
+      required: false
+  - type: textarea
+    id: request
+    attributes:
+      label: 무엇을 바꾸면 좋을까요?
+      description: 고칠 내용, 추가할 곳, 빼고 싶은 것 등을 자유롭게 적어 주세요.
+      placeholder: 예) 아오이 호텔은 빼 주세요. / 니시키 시장 근처 맛집도 지도에 넣어 주세요.
+    validations:
+      required: true
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: 얼마나 급한가요?
+      options:
+        - 여행 전에만 되면 돼요
+        - 빨리 반영해 주세요
+    validations:
+      required: false
