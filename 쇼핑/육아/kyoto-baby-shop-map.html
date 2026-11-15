@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}*{box-sizing:border-box}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>교토 육아용품 지도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 왼쪽 도식 지도, 오른쪽 매장 목록 / 좁은 화면에서는 위아래로 */
+:root{
+  --bg:#F4F5F2; --surface:#FFFFFF; --ink:#1E2430; --muted:#646B75; --line:#D9DCD6;
+  --accent:#27466E; --shop:#C0567A; --area:#F3D6E0; --hotel:#9AA1AB; --river:#BFD6E6; --street:#E3E5DF;
+  --hankyu:#7A2E3A; --subway:#2F8A57; --tozai:#C1782F; --keihan:#2E6FB0;
+  --font-display:"Gowun Batang", "Noto Serif KR", serif;
+  --font-body:"Noto Sans KR", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181F; --surface:#1C222B; --ink:#E7E9EC; --muted:#9AA1AB; --line:#2E3540;
+  --accent:#8FB0DA; --shop:#E58BA9; --area:#4A2A37; --hotel:#5E6672; --river:#24425A; --street:#262D37;
+  --hankyu:#C97986; --subway:#5FBE88; --tozai:#E0A266; --keihan:#6FA6DE; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181F; --surface:#1C222B; --ink:#E7E9EC; --muted:#9AA1AB; --line:#2E3540;
+  --accent:#8FB0DA; --shop:#E58BA9; --area:#4A2A37; --hotel:#5E6672; --river:#24425A; --street:#262D37;
+  --hankyu:#C97986; --subway:#5FBE88; --tozai:#E0A266; --keihan:#6FA6DE; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--font-display);font-size:1.75rem;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.home{color:var(--accent);font-size:.85rem;text-decoration:none}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;position:sticky;top:max(12px, env(safe-area-inset-top, 0px))}
+@media (max-width:860px){.mapbox{position:static}}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);padding:8px 4px 2px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:18px;height:4px;border-radius:2px;display:inline-block}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.note{font-size:.75rem;color:var(--muted);padding:4px}
+.list{display:flex;flex-direction:column;gap:8px}
+.group-title{font-size:.8rem;color:var(--muted);font-weight:700;margin:8px 2px 0;letter-spacing:.04em}
+.card{user-select:text;-webkit-user-select:text;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px}
+.card:hover{border-color:var(--accent)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card[aria-pressed="true"]{border-color:var(--shop);box-shadow:0 0 0 1px var(--shop)}
+.num{width:26px;height:26px;border-radius:50%;background:var(--shop);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:.8rem}
+.num.area{border-radius:6px}
+.card h3{margin:0;font-size:.98rem;font-weight:700;cursor:text}
+.card .sub{font-size:.8rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.type{border-color:var(--shop);color:var(--shop)}
+.chip.warn{border-style:dashed}
+.detail{margin-top:8px;font-size:.84rem;display:none}
+.card[aria-pressed="true"] .detail{display:block}
+.detail ul{margin:4px 0 6px;padding-left:18px}
+.detail a{color:var(--accent)}
+.st-label{font-size:11px;fill:var(--ink);font-family:var(--font-body);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
+.street-label{font-size:10px;fill:var(--muted);font-family:var(--font-body);letter-spacing:.04em}
+.s-num{font-size:11px;font-weight:700;fill:var(--surface);font-family:var(--font-body);pointer-events:none}
+.edge-label{font-size:11px;font-weight:700;fill:var(--shop);font-family:var(--font-body);paint-order:stroke;stroke:var(--surface);stroke-width:3px}
+.shop-pin{cursor:pointer}
+@media (prefers-reduced-motion: no-preference){.shop-pin circle,.shop-pin rect{transition:transform .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <a id="home-link" class="home" href="../../index.html">‹ 태교여행 준비 홈</a>
+    <h1>교토 육아용품 지도</h1>
+    <p>일본 육아용품 체크리스트에 있는 물건을 어디서 살 수 있는지, 가까운 역과 함께 보여줘요. 번호나 목록을 누르면 가장 가까운 역까지 직선거리가 나와요.</p>
+  </header>
+
+  <div class="grid">
+    <div class="mapbox">
+      <svg id="map" viewBox="0 0 800 820" role="img" aria-label="교토 시내 육아용품 매장과 역 위치 도식 지도"></svg>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--hankyu)"></i>한큐 교토선</span>
+        <span><i class="sw" style="background:var(--subway)"></i>지하철 가라스마선</span>
+        <span><i class="sw" style="background:var(--tozai)"></i>지하철 도자이선</span>
+        <span><i class="sw" style="background:var(--keihan)"></i>게이한선</span>
+        <span><i class="dot" style="background:var(--shop)"></i>매장</span>
+        <span><i class="dot" style="background:var(--area);border:1px solid var(--shop)"></i>드럭스토어 밀집 구역</span>
+        <span><i class="dot" style="background:var(--hotel)"></i>숙소 후보</span>
+      </div>
+      <div class="note">거리와 노선은 실제 위치를 단순하게 그린 도식이에요. 화살표는 지도 밖에 있는 매장 방향이에요. 정확한 위치와 영업시간은 각 매장의 "구글 지도" 링크로 확인하세요.</div>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<script>
+const B={latMin:34.9790,latMax:35.0135,lonMin:135.7500,lonMax:135.7880};
+const W=800,H=820,PAD=20;
+const kx=Math.cos(35*Math.PI/180);
+const spanX=(B.lonMax-B.lonMin)*kx, spanY=(B.latMax-B.latMin);
+const s=Math.min((W-2*PAD)/spanX,(H-2*PAD)/spanY);
+const ox=(W-spanX*s)/2, oy=(H-spanY*s)/2;
+const P=(lat,lon)=>[ox+(lon-B.lonMin)*kx*s, oy+(B.latMax-lat)*s];
+const inside=(lat,lon)=>lat>=B.latMin&&lat<=B.latMax&&lon>=B.lonMin&&lon<=B.lonMax;
+
+const stations=[
+  {name:"교토가와라마치 (한큐)",lat:35.00376,lon:135.76961,dx:8,dy:18,anchor:"start"},
+  {name:"가라스마 (한큐) / 시조 (지하철)",lat:35.00369,lon:135.76000,dx:-9,dy:-10,anchor:"end"},
+  {name:"기온시조 (게이한)",lat:35.00269,lon:135.77160,dx:9,dy:20,anchor:"start"},
+  {name:"기요미즈고조 (게이한)",lat:34.99636,lon:135.76867,dx:9,dy:14,anchor:"start"},
+  {name:"고조 (지하철)",lat:34.99604,lon:135.75910,dx:-9,dy:4,anchor:"end"},
+  {name:"교토역 (JR·지하철)",lat:34.98535,lon:135.75877,dx:12,dy:5,anchor:"start"},
+  {name:"교토시야쿠쇼마에 (지하철 도자이선)",lat:35.01090,lon:135.76887,dx:-9,dy:-6,anchor:"end"},
+  {name:"산조 (게이한) / 산조케이한 (도자이선)",lat:35.00902,lon:135.77233,dx:9,dy:4,anchor:"start"},
+];
+const hotels=[
+  [35.00590,135.76997],[35.00252,135.76970],[35.0000,135.7652],[35.00662,135.75683],
+  [34.9930,135.7594],[34.99848,135.77370],[34.9966,135.7722],[35.0010,135.7699],[35.01060,135.77082]
+];
+
+// 매장 데이터 (체크리스트의 "where" 기준)
+const shops=[
+  {id:"drug",area:true,label:"D",name:"드럭스토어 밀집 구역 (시조 가와라마치 ~ 신쿄고쿠)",lat:35.0047,lon:135.7672,r:0.0011,
+   type:"드럭스토어",station:"한큐 교토가와라마치역, 지하철 시조역 사이",
+   items:["피죤 젖병·젖꼭지","젖병 세정제·소독 태블릿","수유패드","무니·메리즈·군 기저귀","레크 물티슈","무히 크림·패치","아라우 베이비","와코도·큐피 이유식","아기과자"],
+   pts:["마쓰모토키요시, 스기약국, 코쿠민 같은 체인이 시조도리·가와라마치도리·신쿄고쿠 상점가에 여러 곳 있어요","매장마다 재고와 가격이 달라서 두세 곳 비교하기 좋아요","면세는 한 매장 하루 합계 5,000엔(세전) 이상, 여권 필요"],
+   q:"ドラッグストア 四条河原町"},
+  {id:"donki",label:"1",name:"돈키호테 시조가와라마치점",lat:35.0053,lon:135.7690,approx:true,
+   type:"할인 잡화점",station:"한큐 교토가와라마치역 도보 3분",
+   items:["메리즈·군 기저귀","아기과자"],
+   pts:["河原町通蛸薬師下る塩屋町321","늦게까지 영업해서 저녁에 들르기 좋아요 (영업시간은 공식 사이트에서 확인)","관광객이 많아 계산 줄이 길 수 있어요"],
+   q:"ドン・キホーテ 四条河原町店"},
+  {id:"takashimaya",label:"2",name:"다카시마야 교토점",lat:35.00307,lon:135.76843,
+   type:"백화점",station:"한큐 교토가와라마치역 바로 앞",
+   items:["미키하우스 첫 신발·의류","거즈 손수건·속싸개","리첼·써모스 빨대컵"],
+   pts:["아동복·아기용품 층에서 선물용 브랜드를 볼 수 있어요","입점 브랜드는 매장 안내에서 확인 (미키하우스 등)","면세 카운터 이용 가능"],
+   q:"京都髙島屋"},
+  {id:"daimaru",label:"3",name:"다이마루 교토점",lat:35.00437,lon:135.76190,
+   type:"백화점",station:"한큐 가라스마역 / 지하철 시조역 바로 앞",
+   items:["미키하우스 첫 신발·의류","거즈 손수건·속싸개","리첼·써모스 빨대컵"],
+   pts:["다카시마야와 걸어서 10분 거리라 같이 둘러보기 좋아요","입점 브랜드는 매장 안내에서 확인"],
+   q:"大丸京都店"},
+  {id:"isetan",label:"4",name:"JR 교토 이세탄",lat:34.9862,lon:135.7570,approx:true,
+   type:"백화점",station:"교토역 건물 안",
+   items:["거즈 손수건·속싸개","아동복·선물"],
+   pts:["교토역에 붙어 있어서 마지막 날 공항 가기 전에 들르기 좋아요","아동 매장 입점 브랜드는 매장에서 확인"],
+   q:"ジェイアール京都伊勢丹"},
+  {id:"bic",label:"5",name:"빅카메라 JR 교토역점",lat:34.9848,lon:135.7556,approx:true,
+   type:"가전 양판점",station:"교토역 서쪽 출구 바로 앞",
+   items:["콤비·아프리카 유모차 (취급 여부 확인)"],
+   pts:["체크리스트에 유모차 구매처로 적혀 있는 곳이에요","이 매장의 유모차 취급 여부는 확인하지 못했어요. 가기 전에 전화나 공식 사이트로 확인하세요"],
+   q:"ビックカメラ JR京都駅店"},
+  {id:"babiesrus",label:"6",name:"토이저러스·베이비저러스 교토점",lat:34.98281,lon:135.75459,
+   type:"아기용품 전문점",station:"교토역 하치조 출구 도보 약 5분",
+   items:["콤비·아프리카 유모차","아기띠·슬링","피죤 젖병·젖꼭지","코흡입기·손톱가위","호빵맨 장난감·치발기"],
+   pts:["이온몰 KYOTO 가에데관 1층 (南区西九条鳥居口町1)","10:00~21:00 (소개 사이트 기준, 공식 사이트에서 확인)","시내에서 가장 가까운 아기용품 전문점. 큰 짐은 마지막 날 사는 걸 추천"],
+   q:"トイザらス・ベビーザらス 京都店 イオンモールKYOTO"},
+  {id:"momo",label:"7",name:"아카짱혼포 MOMO 테라스점",lat:34.93702,lon:135.79503,
+   type:"아기용품 전문점",station:"지하철 도자이선 로쿠지조역 도보 약 5분",
+   items:["피죤 젖병·젖꼭지","손톱가위·코흡입기","콤비 테테오 이유식 세트","리첼 빨대컵","아기띠·유모차","거즈 손수건"],
+   pts:["일본 최대 아기용품 체인. 체크리스트 물건 대부분을 한 번에 살 수 있어요","후시미구 쇼핑몰 MOMO 테라스 안 (伏見区桃山町山ノ下32)","산조케이한·교토시야쿠쇼마에역에서 도자이선을 타면 환승 없이 갈 수 있어요"],
+   q:"アカチャンホンポ MOMOテラス店"},
+  {id:"rakuhoku",label:"8",name:"아카짱혼포 라쿠호쿠 한큐 스퀘어점",lat:35.04100,lon:135.77896,
+   type:"아기용품 전문점",station:"시내 북쪽 다카노 (역에서 먼 편)",
+   items:["MOMO 테라스점과 비슷한 품목"],
+   pts:["左京区高野西開町36 洛北阪急スクエア 2층","철도역에서 떨어져 있어서 버스나 택시가 필요해요","숙소 후보에서는 MOMO 테라스점이 더 가기 편해요"],
+   q:"アカチャンホンポ 洛北阪急スクエア店"},
+];
+
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("map");
+const el=(t,a={},parent=svg)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);parent.appendChild(e);return e;};
+const line=(pts,attrs)=>el("polyline",Object.assign({points:pts.map(p=>P(p[0],p[1]).join(",")).join(" "),fill:"none"},attrs));
+const label=(x,y,txt,cls,attrs={},parent=svg)=>{const t=el("text",Object.assign({x,y,class:cls},attrs),parent);t.textContent=txt;return t;};
+
+el("rect",{x:0,y:0,width:W,height:H,fill:"var(--surface)"});
+
+// 도로 (대략)
+const streets=[
+  {name:"오이케도리",pts:[[35.0108,B.lonMin],[35.0108,135.7705]],lab:[35.0108,135.7510]},
+  {name:"산조도리",pts:[[35.0089,B.lonMin],[35.0089,135.7790]],lab:[35.0089,135.7510]},
+  {name:"시조도리",pts:[[35.0036,B.lonMin],[35.0037,135.7790]],lab:[35.0036,135.7510]},
+  {name:"고조도리",pts:[[34.9961,B.lonMin],[34.9961,135.7790]],lab:[34.9961,135.7510]},
+  {name:"하치조도리",pts:[[34.9840,B.lonMin],[34.9840,135.7700]],lab:[34.9840,135.7510]},
+  {name:"",pts:[[B.latMax,135.7596],[34.9862,135.7596]]},
+  {name:"",pts:[[B.latMax,135.7690],[35.0000,135.7690],[34.9930,135.7678]]},
+  {name:"",pts:[[B.latMax,135.7790],[34.9930,135.7790]]},
+];
+streets.forEach(st=>line(st.pts,{stroke:"var(--street)","stroke-width":7,"stroke-linecap":"round"}));
+line([[B.latMax,135.7725],[35.0090,135.7717],[35.0035,135.7709],[34.9995,135.7693],[34.9960,135.7682],[34.9900,135.7672],[B.latMin,135.7682]],
+  {stroke:"var(--river)","stroke-width":14,"stroke-linecap":"round","stroke-linejoin":"round"});
+{const [x,y]=P(34.9905,135.7676);label(x+12,y,"가모강","street-label");}
+streets.forEach(st=>{if(st.lab){const [x,y]=P(st.lab[0],st.lab[1]);label(x,y-6,st.name,"street-label");}});
+[["가라스마도리",35.0125,135.7596],["가와라마치도리",35.0125,135.7690],["히가시오지도리",35.0125,135.7790]].forEach(([n,la,lo])=>{const [x,y]=P(la,lo);label(x+5,y,n,"street-label");});
+
+// 철도 (도식)
+line([[35.00369,135.76000],[35.00376,135.76961]],{stroke:"var(--hankyu)","stroke-width":4});
+line([[35.00369,B.lonMin],[35.00369,135.76000]],{stroke:"var(--hankyu)","stroke-width":4,"stroke-dasharray":"6 5"});
+line([[B.latMax,135.7598],[35.00369,135.7598],[34.99604,135.75910],[34.98535,135.75877],[B.latMin,135.7588]],{stroke:"var(--subway)","stroke-width":4,"stroke-linejoin":"round"});
+line([[35.0110,B.lonMin],[35.01090,135.76887],[35.00902,135.77233],[35.0093,135.7790],[35.0060,135.7880]],{stroke:"var(--tozai)","stroke-width":4,"stroke-linejoin":"round"});
+line([[B.latMax,135.7726],[35.00902,135.77233],[35.00269,135.77160],[34.99636,135.76867],[B.latMin,135.7700]],{stroke:"var(--keihan)","stroke-width":4,"stroke-linejoin":"round"});
+{const [x,y]=P(35.0060,135.7880);label(x-6,y+16,"도자이선 → 로쿠지조","street-label",{"text-anchor":"end"}).style.fill="var(--tozai)";}
+
+// 숙소 후보 (참고용)
+hotels.forEach(([la,lo])=>{const [x,y]=P(la,lo);el("circle",{cx:x,cy:y,r:4.5,fill:"var(--hotel)",stroke:"var(--surface)","stroke-width":1.5});});
+
+// 역
+stations.forEach(st=>{const [x,y]=P(st.lat,st.lon);
+  el("circle",{cx:x,cy:y,r:6.5,fill:"var(--surface)",stroke:"var(--ink)","stroke-width":2.2});
+  label(x+st.dx,y+st.dy,st.name,"st-label",{"text-anchor":st.anchor});});
+
+// 거리
+const R=6371000,rad=d=>d*Math.PI/180;
+const dist=(a,b)=>{const dLa=rad(b.lat-a.lat),dLo=rad(b.lon-a.lon);
+  const h=Math.sin(dLa/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
+const nearest=p=>stations.map(s=>({s,d:dist(p,s)})).sort((a,b)=>a.d-b.d);
+
+const linkLine=el("line",{stroke:"var(--shop)","stroke-width":2,"stroke-dasharray":"4 4",visibility:"hidden"});
+const linkText=el("text",{class:"st-label","text-anchor":"middle",visibility:"hidden"});
+linkText.style.fill="var(--shop)";
+
+// 매장 핀
+const pins={};
+const cx0=W/2,cy0=H/2;
+shops.forEach(sh=>{
+  const g=el("g",{class:"shop-pin",tabindex:"0",role:"button","aria-label":sh.name});
+  if(sh.area){
+    const [x,y]=P(sh.lat,sh.lon);const rr=sh.r*s;
+    el("ellipse",{cx:x,cy:y,rx:rr*kx*1.3,ry:rr,fill:"var(--area)",stroke:"var(--shop)","stroke-width":1.5,"stroke-dasharray":"4 3","fill-opacity":.75},g);
+    label(x,y+4,"D","edge-label",{"text-anchor":"middle"},g);
+    pins[sh.id]={g,shape:g.firstChild,x,y};
+  }else if(inside(sh.lat,sh.lon)){
+    const [x,y]=P(sh.lat,sh.lon);
+    const c=el("circle",{cx:x,cy:y,r:10,fill:"var(--shop)",stroke:"var(--surface)","stroke-width":2},g);
+    label(x,y+4,sh.label,"s-num",{"text-anchor":"middle"},g);
+    pins[sh.id]={g,shape:c,x,y};
+  }else{
+    // 지도 밖 매장: 가장자리 화살표
+    const [tx,ty]=P(sh.lat,sh.lon);let dx=tx-cx0,dy=ty-cy0;
+    const k=Math.min((W/2-26)/Math.abs(dx||1e-9),(H/2-26)/Math.abs(dy||1e-9));
+    const x=cx0+dx*k,y=cy0+dy*k,ang=Math.atan2(dy,dx)*180/Math.PI;
+    const c=el("circle",{cx:x,cy:y,r:11,fill:"var(--shop)",stroke:"var(--surface)","stroke-width":2},g);
+    el("path",{d:"M0,-6 L10,0 L0,6 Z",fill:"var(--shop)",transform:`translate(${x+dx/Math.hypot(dx,dy)*14},${y+dy/Math.hypot(dx,dy)*14}) rotate(${ang})`},g);
+    label(x,y+4,sh.label,"s-num",{"text-anchor":"middle"},g);
+    const km=(dist(sh,{lat:35.0037,lon:135.7696})/1000).toFixed(1);
+    const lx=x<W/2?x+16:x-16, anchor=x<W/2?"start":"end", ly=y+4;
+    label(lx,ly,`${sh.name} · 가와라마치에서 약 ${km}km`,"edge-label",{"text-anchor":anchor},g);
+    pins[sh.id]={g,shape:c,x,y,outside:true};
+  }
+  g.addEventListener("click",()=>select(sh.id,true));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(sh.id,true);}});
+});
+
+// 목록
+const list=document.getElementById("list");
+const cards={};
+const groups=[["시내 (숙소 근처)",s=>!s.area&&["donki","takashimaya","daimaru"].includes(s.id)||s.area],["교토역 주변",s=>["isetan","bic","babiesrus"].includes(s.id)],["시내 밖 (아기용품 전문점)",s=>["momo","rakuhoku"].includes(s.id)]];
+groups.forEach(([title,fn])=>{
+  const h=document.createElement("div");h.className="group-title";h.textContent=title;list.appendChild(h);
+  shops.filter(fn).forEach(sh=>{
+    const near=nearest(sh).slice(0,1)[0];
+    const mapsUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(sh.q+" 京都");
+    const b=document.createElement("div");b.className="card";b.tabIndex=0;b.setAttribute("role","button");b.setAttribute("aria-pressed","false");b.id="shop-"+sh.id;
+    b.innerHTML=`<span class="num${sh.area?" area":""}">${sh.label}</span><div style="min-width:0">
+      <h3>${sh.name}</h3><div class="sub">${sh.station}${sh.approx?" · 추정 위치":""}</div>
+      <div class="meta"><span class="chip type">${sh.type}</span>${sh.items.map(i=>`<span class="chip${/확인/.test(i)?" warn":""}">${i}</span>`).join("")}</div>
+      <div class="detail"><ul>${sh.pts.map(p=>`<li>${p}</li>`).join("")}</ul>
+        ${pins[sh.id]&&!pins[sh.id].outside?`<div>지도상 가장 가까운 역 (직선거리): ${near.s.name.split(" (")[0]} ${Math.round(near.d/10)*10}m</div>`:""}
+        <a href="${mapsUrl}" target="_blank" rel="noopener">구글 지도에서 보기 ↗</a></div></div>`;
+    b.addEventListener("click",e=>{if(e.target.closest("a"))return;const sel=window.getSelection&&window.getSelection().toString();if(sel)return;select(sh.id,false);});
+    b.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===b){e.preventDefault();select(sh.id,false);}});
+    list.appendChild(b);cards[sh.id]=b;
+  });
+});
+
+let current=null;
+function select(id,fromMap){
+  current=(current===id&&!fromMap)?null:id;
+  shops.forEach(sh=>{const on=sh.id===current;cards[sh.id].setAttribute("aria-pressed",on);
+    const p=pins[sh.id];p.shape.setAttribute("stroke-width",on?4:(sh.area?1.5:2));p.shape.setAttribute("stroke",on?"var(--ink)":(sh.area?"var(--shop)":"var(--surface)"));});
+  linkLine.setAttribute("visibility","hidden");linkText.setAttribute("visibility","hidden");
+  if(current==null)return;
+  const sh=shops.find(x=>x.id===current),p=pins[current];
+  if(!p.outside){
+    const nr=nearest(sh)[0];const [x2,y2]=P(nr.s.lat,nr.s.lon);
+    Object.entries({x1:p.x,y1:p.y,x2,y2}).forEach(([k,v])=>linkLine.setAttribute(k,v));
+    linkText.setAttribute("x",(p.x+x2)/2);linkText.setAttribute("y",(p.y+y2)/2-8);
+    linkText.textContent=`${Math.round(nr.d/10)*10}m · 도보 약 ${Math.max(1,Math.round(nr.d/80))}분`;
+    linkLine.setAttribute("visibility","visible");linkText.setAttribute("visibility","visible");
+    svg.appendChild(linkLine);svg.appendChild(linkText);
+  }
+  Object.values(pins).forEach(q=>{if(!q.g.querySelector("ellipse"))svg.appendChild(q.g);});
+  if(fromMap)cards[current].scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+select("babiesrus",false);
+</script>
+</body>
+</html>
