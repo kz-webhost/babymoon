@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}*{box-sizing:border-box}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>교토 호텔 지도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 왼쪽 도식 지도, 오른쪽 호텔 목록 / 좁은 화면에서는 위아래로 */
+:root{
+  --bg:#F4F5F2; --surface:#FFFFFF; --ink:#1E2430; --muted:#646B75; --line:#D9DCD6;
+  --accent:#27466E; --hotel:#B5452F; --river:#BFD6E6; --street:#E3E5DF;
+  --hankyu:#7A2E3A; --subway:#2F8A57; --keihan:#2E6FB0; --place:#8A6A2F;
+  --font-display:"Gowun Batang", "Noto Serif KR", serif;
+  --font-body:"Noto Sans KR", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181F; --surface:#1C222B; --ink:#E7E9EC; --muted:#9AA1AB; --line:#2E3540;
+  --accent:#8FB0DA; --hotel:#E07A62; --river:#24425A; --street:#262D37;
+  --hankyu:#C97986; --subway:#5FBE88; --keihan:#6FA6DE; --place:#C9A866; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181F; --surface:#1C222B; --ink:#E7E9EC; --muted:#9AA1AB; --line:#2E3540;
+  --accent:#8FB0DA; --hotel:#E07A62; --river:#24425A; --street:#262D37;
+  --hankyu:#C97986; --subway:#5FBE88; --keihan:#6FA6DE; --place:#C9A866; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--font-display);font-size:1.75rem;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;position:sticky;top:max(12px, env(safe-area-inset-top, 0px))}
+@media (max-width:860px){.mapbox{position:static}}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);padding:8px 4px 2px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:18px;height:4px;border-radius:2px;display:inline-block}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.note{font-size:.75rem;color:var(--muted);padding:4px}
+.list{display:flex;flex-direction:column;gap:8px}
+.card{user-select:text;-webkit-user-select:text;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px}
+.card:hover{border-color:var(--accent)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card[aria-pressed="true"]{border-color:var(--hotel);box-shadow:0 0 0 1px var(--hotel)}
+.num{width:26px;height:26px;border-radius:50%;background:var(--hotel);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums}
+.card h3{margin:0;font-size:.98rem;font-weight:700;cursor:text}
+.card .sub{font-size:.8rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.ok{border-color:var(--subway);color:var(--subway)}
+.chip.warn{border-color:var(--hotel);color:var(--hotel)}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.photos figure{margin:0;position:relative;min-width:0}
+.photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:6px;display:block;background:var(--street)}
+.photos figcaption{position:absolute;left:6px;bottom:6px;font-size:.68rem;padding:1px 6px;border-radius:4px;background:rgba(20,24,31,.65);color:#fff}
+.credit{font-size:.68rem;color:var(--muted);margin-top:3px}
+.detail{margin-top:8px;font-size:.84rem;display:none}
+.card[aria-pressed="true"] .detail{display:block}
+.detail ul{margin:4px 0 6px;padding-left:18px}
+.detail a{color:var(--accent)}
+.near{font-variant-numeric:tabular-nums}
+.st-label{font-size:11px;fill:var(--ink);font-family:var(--font-body);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
+.pl-label{font-size:11px;fill:var(--place);font-family:var(--font-body);paint-order:stroke;stroke:var(--surface);stroke-width:3px}
+.street-label{font-size:10px;fill:var(--muted);font-family:var(--font-body);letter-spacing:.04em}
+.h-num{font-size:11px;font-weight:700;fill:var(--surface);font-family:var(--font-body);pointer-events:none}
+.hotel-pin{cursor:pointer}
+@media (prefers-reduced-motion: no-preference){.hotel-pin circle{transition:r .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <a id="home-link" href="../../index.html" hidden style="color:var(--accent);font-size:.85rem;text-decoration:none">‹ 태교여행 준비 홈</a>
+    <h1>교토 호텔 지도</h1>
+    <p>2026.12.05 ~ 12.08 · 호텔 후보 9곳과 주변 역, 쇼핑 장소. 번호나 목록을 누르면 가장 가까운 역까지 직선거리가 표시돼요.</p>
+  </header>
+
+  <div class="grid">
+    <div class="mapbox">
+      <svg id="map" viewBox="0 0 800 760" role="img" aria-label="교토 시내 호텔과 역 위치 도식 지도"></svg>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--hankyu)"></i>한큐 교토선 (→ 아라시야마·오사카)</span>
+        <span><i class="sw" style="background:var(--subway)"></i>지하철 가라스마선</span>
+        <span><i class="sw" style="background:var(--keihan)"></i>게이한선</span>
+        <span><i class="dot" style="background:var(--hotel)"></i>호텔</span>
+        <span><i class="dot" style="background:var(--place)"></i>쇼핑·관광</span>
+      </div>
+      <div class="note">거리와 노선은 실제 위치를 단순하게 그린 도식이에요. 정확한 위치는 각 호텔의 "구글 지도" 링크로 확인하세요. 일부 호텔(△ 표시)은 주소로 추정한 위치예요.</div>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<script>
+const B={latMin:34.9835,latMax:35.0135,lonMin:135.7525,lonMax:135.7880};
+const W=800,H=760,PAD=20;
+const kx=Math.cos(35*Math.PI/180);
+const spanX=(B.lonMax-B.lonMin)*kx, spanY=(B.latMax-B.latMin);
+const s=Math.min((W-2*PAD)/spanX,(H-2*PAD)/spanY);
+const ox=(W-spanX*s)/2, oy=(H-spanY*s)/2;
+const P=(lat,lon)=>[ox+(lon-B.lonMin)*kx*s, oy+(B.latMax-lat)*s];
+
+const stations=[
+  {id:"kwr",name:"교토가와라마치 (한큐)",lat:35.00376,lon:135.76961,dx:-8,dy:-10,anchor:"end"},
+  {id:"krs",name:"가라스마 (한큐) / 시조 (지하철)",lat:35.00369,lon:135.76000,dx:8,dy:-10,anchor:"start"},
+  {id:"gion",name:"기온시조 (게이한)",lat:35.00269,lon:135.77160,dx:9,dy:4,anchor:"start"},
+  {id:"kgojo",name:"기요미즈고조 (게이한)",lat:34.99636,lon:135.76867,dx:9,dy:14,anchor:"start"},
+  {id:"gojo",name:"고조 (지하철)",lat:34.99604,lon:135.75910,dx:-9,dy:4,anchor:"end"},
+  {id:"kyoto",name:"교토역 (JR·지하철·하루카)",lat:34.98535,lon:135.75877,dx:10,dy:4,anchor:"start"},
+  {id:"shiyaku",name:"교토시야쿠쇼마에 (지하철 도자이선)",lat:35.01090,lon:135.76887,dx:-9,dy:-6,anchor:"end"},
+  {id:"sanjo",name:"산조 (게이한)",lat:35.00902,lon:135.77233,dx:9,dy:4,anchor:"start"},
+];
+const places=[
+  {name:"다카시마야",lat:35.00307,lon:135.76843,dx:-6,dy:14,anchor:"end"},
+  {name:"다이마루",lat:35.00437,lon:135.76190,dx:6,dy:-6,anchor:"start"},
+  {name:"KAPITAL (K.K-POPPO)",lat:35.0063,lon:135.7662,dx:-7,dy:-5,anchor:"end"},
+  {name:"청수사",lat:34.99430,lon:135.78444,dx:-8,dy:16,anchor:"middle"},
+  {name:"야사카 신사",lat:35.00365,lon:135.77850,dx:0,dy:-9,anchor:"middle"},
+];
+const hotels=[
+  {n:1,name:"더 게이트 호텔 교토 다카세가와 by HULIC (4성급)",area:"가와라마치",lat:35.00590,lon:135.76997,exact:true,
+   price:"약 ¥31,000~ (조식 포함, 최저가)",budget:"ok",feel:"일본식 ★★☆",
+   pts:["한큐 가와라마치역 도보 3분, 게이한 기온시조역 도보 5분","옛 초등학교 터, 다카세가와 강변, 루프톱 바","쇼핑·교통 모두 최상 (추천 1순위)"],
+   q:"THE GATE HOTEL 京都高瀬川 by HULIC"},
+  {n:2,name:"소라니와 테라스 교토 벳테이",area:"가와라마치",lat:35.00252,lon:135.76970,exact:true,
+   price:"약 ¥47,000~73,000+",budget:"warn",feel:"일본식 ★★★",
+   pts:["한큐 가와라마치역 2번 출구 도보 2분","전 객실 온천 노천탕, 최상층 대욕장","예산 상한선 근처~초과 → 1박만 묵는 것도 방법"],
+   q:"四条河原町温泉 空庭テラス京都 別邸"},
+  {n:3,name:"유겐 교토 시조",area:"시조 남쪽",lat:35.0000,lon:135.7652,exact:false,
+   price:"약 $290~360",budget:"ok",feel:"일본식 ★★★",
+   pts:["麩屋町通高辻下ル 鍵屋町218","가와라마치역 11번 출구 도보 약 6분","공용 대욕장, 사우나 / 객실 44㎡"],
+   q:"Yugen Kyoto Shijo"},
+  {n:4,name:"미쓰이 가든 호텔 교토 신마치 벳테이",area:"시조 가라스마",lat:35.00662,lon:135.75683,exact:true,
+   price:"중간 가격대",budget:"ok",feel:"일본식 ★★☆",
+   pts:["지하철 시조역 / 한큐 가라스마역 도보 7분","인공 탄산천 대욕장","객실 22㎡로 작은 편"],
+   q:"三井ガーデンホテル京都新町 別邸"},
+  {n:5,name:"호텔 칸라 교토",area:"고조 가라스마",lat:34.9930,lon:135.7594,exact:false,
+   price:"약 ¥32,800~ (최저가)",budget:"ok",feel:"일본식 ★★★",
+   pts:["지하철 고조역 G번 출구 도보 1분, 교토역 도보 12분","전 객실 히바(편백) 욕조, 객실 30~87㎡","쇼핑 지역까지 지하철 1정거장"],
+   q:"HOTEL KANRA KYOTO"},
+  {n:6,name:"호텔 더 셀레스틴 교토 기온",area:"기온·히가시야마",lat:34.99848,lon:135.77370,exact:true,
+   price:"약 ¥36,000~73,000",budget:"warn",feel:"일본식 ★★☆",
+   pts:["게이한 기온시조역 도보 10분, 교토역 무료 셔틀","남녀 대욕장","⚠ 바로 옆 신축 공사 (2026.10 ~ 2028.3)"],
+   q:"HOTEL THE CELESTINE KYOTO GION"},
+  {n:7,name:"노가 호텔 기요미즈 교토",area:"기요미즈고조",lat:34.9966,lon:135.7722,exact:false,
+   price:"작년 12월 약 $320",budget:"ok",feel:"일본식 ★☆☆",
+   pts:["게이한 기요미즈고조역 4번 출구 도보 7분","루프톱 바, 미쉐린 가이드 선정","쇼핑 지역과 거리가 있음"],
+   q:"NOHGA HOTEL KIYOMIZU KYOTO"},
+  {n:8,name:"아오이 호텔 교토 (4성급)",area:"기야마치·가모강변",lat:35.0010,lon:135.7699,exact:false,
+   price:"약 ¥38,000~72,000",budget:"ok",feel:"일본식 ★★★",
+   pts:["木屋町通仏光寺上る 天王町146","한큐 가와라마치역 도보 3분, 게이한 기온시조역 도보 5분","객실 6개뿐 → 빈방 먼저 확인"],
+   q:"葵 HOTEL KYOTO"},
+  {n:9,name:"솔라리아 니시테츠 호텔 교토 프리미어 산조카모가와 (4성급)",area:"산조·가모강변",lat:35.01060,lon:135.77082,exact:true,
+   price:"약 ¥12,400~ (최저가, 날짜 미상)",budget:"ok",feel:"일본식 ★★☆",
+   pts:["지하철 도자이선 교토시야쿠쇼마에역 도보 1분, 게이한 산조역 도보 2분","지하 대욕장 (남녀, 15:00~25:00 / 6:00~9:00), 정원 뷰 객실","200실, 전 객실 욕실·화장실 분리. 가와라마치 쇼핑가까지 도보 약 10분"],
+   q:"ソラリア西鉄ホテル京都プレミア 三条鴨川"},
+];
+
+const photos={
+  1:{src:"KNT",a:"외관",b:"객실"},
+  2:{src:"KNT",a:"외관",b:null},
+  3:{src:"공식 사이트",a:"대욕장",b:"정원 풍경"},
+  4:{src:"KNT",a:"마치야풍 외관",b:"객실"},
+  5:{src:"공식 사이트",a:"입구",b:"객실"},
+  6:{src:"KNT",a:"입구",b:"객실"},
+  7:{src:"공식 사이트",a:"객실",b:"로비 소품"},
+  8:{src:"KNT",a:"외관",b:"객실"},
+  9:{src:"jalan",a:"가모강에서 본 외관",b:"가든 객실"},
+};
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("map");
+const el=(t,a={},parent=svg)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);parent.appendChild(e);return e;};
+const line=(pts,attrs)=>el("polyline",Object.assign({points:pts.map(p=>P(p[0],p[1]).join(",")).join(" "),fill:"none"},attrs));
+
+// 배경
+el("rect",{x:0,y:0,width:W,height:H,fill:"var(--surface)"});
+
+// 주요 도로 (대략)
+const streets=[
+  {name:"오이케도리",pts:[[35.0108,B.lonMin],[35.0108,135.7705]],lab:[35.0108,135.7535]},
+  {name:"산조도리",pts:[[35.0089,B.lonMin],[35.0089,135.7790]],lab:[35.0089,135.7535]},
+  {name:"시조도리",pts:[[35.0036,B.lonMin],[35.0037,135.7790]],lab:[35.0036,135.7535]},
+  {name:"고조도리",pts:[[34.9961,B.lonMin],[34.9961,135.7790]],lab:[34.9961,135.7535]},
+  {name:"가라스마도리",pts:[[B.latMax,135.7596],[34.9862,135.7596]],lab:null},
+  {name:"가와라마치도리",pts:[[B.latMax,135.7690],[35.0000,135.7690],[34.9930,135.7678]],lab:null},
+  {name:"히가시오지도리",pts:[[B.latMax,135.7790],[34.9930,135.7790]],lab:null},
+];
+streets.forEach(st=>{line(st.pts,{stroke:"var(--street)","stroke-width":7,"stroke-linecap":"round"});});
+// 가모강
+line([[B.latMax,135.7725],[35.0090,135.7717],[35.0035,135.7709],[34.9995,135.7693],[34.9960,135.7682],[34.9900,135.7672],[B.latMin,135.7680]],
+  {stroke:"var(--river)","stroke-width":14,"stroke-linecap":"round","stroke-linejoin":"round"});
+{const [x,y]=P(34.9905,135.7676);const t=el("text",{x:x+12,y:y,class:"street-label"});t.textContent="가모강";}
+streets.forEach(st=>{
+  if(st.lab){const [x,y]=P(st.lab[0],st.lab[1]);const t=el("text",{x:x,y:y-6,class:"street-label"});t.textContent=st.name;}
+});
+[["가라스마도리",35.0125,135.7596],["가와라마치도리",35.0125,135.7690],["히가시오지도리",35.0125,135.7790]].forEach(([n,la,lo])=>{
+  const [x,y]=P(la,lo);const t=el("text",{x:x+5,y:y,class:"street-label"});t.textContent=n;});
+
+// 철도 노선 (도식)
+line([[35.00369,135.76000],[35.00376,135.76961]],{stroke:"var(--hankyu)","stroke-width":4});
+line([[35.00369,135.75000],[35.00369,135.76000]],{stroke:"var(--hankyu)","stroke-width":4,"stroke-dasharray":"6 5"});
+{const [x,y]=P(35.00369,135.7535);const t=el("text",{x:x,y:y+16,class:"street-label",fill:"var(--hankyu)"});t.textContent="← 가쓰라 환승 → 아라시야마 (약 25분)";t.style.fill="var(--hankyu)";}
+line([[B.latMax,135.7598],[35.00369,135.7598],[34.99604,135.75910],[34.98535,135.75877]],{stroke:"var(--subway)","stroke-width":4,"stroke-linejoin":"round"});
+line([[B.latMax,135.7726],[35.00902,135.77233],[35.00269,135.77160],[34.99636,135.76867],[34.9870,135.7698]],{stroke:"var(--keihan)","stroke-width":4,"stroke-linejoin":"round"});
+
+// 장소
+places.forEach(p=>{const [x,y]=P(p.lat,p.lon);
+  el("rect",{x:x-5,y:y-5,width:10,height:10,transform:`rotate(45 ${x} ${y})`,fill:"var(--place)"});
+  const t=el("text",{x:x+p.dx,y:y+p.dy,class:"pl-label","text-anchor":p.anchor});t.textContent=p.name;});
+
+// 역
+stations.forEach(st=>{const [x,y]=P(st.lat,st.lon);
+  el("circle",{cx:x,cy:y,r:6.5,fill:"var(--surface)",stroke:"var(--ink)","stroke-width":2.2});
+  const t=el("text",{x:x+st.dx,y:y+st.dy,class:"st-label","text-anchor":st.anchor});t.textContent=st.name;});
+
+// 가장 가까운 역 연결선 (선택 시)
+const linkLine=el("line",{stroke:"var(--hotel)","stroke-width":2,"stroke-dasharray":"4 4",visibility:"hidden"});
+const linkText=el("text",{class:"st-label","text-anchor":"middle",visibility:"hidden"});
+linkText.style.fill="var(--hotel)";
+
+// 거리 계산
+const R=6371000,rad=d=>d*Math.PI/180;
+const dist=(a,b)=>{const dLa=rad(b.lat-a.lat),dLo=rad(b.lon-a.lon);
+  const h=Math.sin(dLa/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
+const nearest=h=>stations.map(s=>({s,d:dist(h,s)})).sort((a,b)=>a.d-b.d);
+
+// 호텔 핀
+const pins={};
+hotels.forEach(h=>{const [x,y]=P(h.lat,h.lon);
+  const g=el("g",{class:"hotel-pin",tabindex:"0",role:"button","aria-label":h.name});
+  const c=el("circle",{cx:x,cy:y,r:10,fill:"var(--hotel)",stroke:"var(--surface)","stroke-width":2},g);
+  const t=el("text",{x:x,y:y+4,class:"h-num","text-anchor":"middle"},g);t.textContent=h.exact?h.n:h.n+"△";
+  if(!h.exact)t.setAttribute("font-size","9");
+  g.addEventListener("click",()=>select(h.n,true));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(h.n,true);}});
+  pins[h.n]={g,c};
+});
+
+// 목록
+const list=document.getElementById("list");
+const cards={};
+hotels.forEach(h=>{
+  const near=nearest(h).slice(0,2);
+  const b=document.createElement("div");b.className="card";b.tabIndex=0;b.setAttribute("role","button");b.id="hotel-"+h.n;b.setAttribute("aria-pressed","false");
+  b.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===b){e.preventDefault();select(h.n,false);}});
+  const mapsUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(h.q+" 京都");
+  const naverUrl="https://search.naver.com/search.naver?query="+encodeURIComponent(h.name.replace(/\s*\(4성급\)/,"")+" 교토 호텔");
+  b.innerHTML=`<span class="num">${h.n}</span><div style="min-width:0">
+    <h3>${h.name}</h3><div class="sub">${h.area}${h.exact?"":" · 추정 위치"}</div>
+    <div class="photos">${["a","b"].filter(k=>photos[h.n][k]).map(k=>`<figure><img src="photos/h${h.n}-${k}.jpg" alt="${h.name} ${photos[h.n][k]}" loading="lazy"><figcaption>${photos[h.n][k]}</figcaption></figure>`).join("")}</div>
+    <div class="credit">사진: ${photos[h.n].src}</div>
+    <div class="meta"><span class="chip ${h.budget}">${h.price}</span><span class="chip">${h.feel}</span></div>
+    <div class="detail"><ul>${h.pts.map(p=>`<li>${p}</li>`).join("")}</ul>
+      <div class="near">가까운 역 (직선거리): ${near.map(x=>`${x.s.name.split(" (")[0]} ${Math.round(x.d/10)*10}m`).join(" · ")}</div>
+      <a href="${mapsUrl}" target="_blank" rel="noopener">구글 지도에서 보기 ↗</a>
+      · <a href="${naverUrl}" target="_blank" rel="noopener">네이버에서 검색 ↗</a></div></div>`;
+  b.addEventListener("click",e=>{if(e.target.closest("a"))return;
+    const sel=window.getSelection&&window.getSelection().toString();if(sel)return; // 글자를 드래그한 경우에는 선택 유지
+    select(h.n,false);});
+  list.appendChild(b);cards[h.n]=b;
+});
+
+let current=null;
+function select(n,fromMap){
+  current=(current===n&&!fromMap)?null:n;
+  hotels.forEach(h=>{const on=h.n===current;cards[h.n].setAttribute("aria-pressed",on);pins[h.n].c.setAttribute("r",on?14:10);});
+  if(current==null){linkLine.setAttribute("visibility","hidden");linkText.setAttribute("visibility","hidden");return;}
+  const h=hotels.find(x=>x.n===current);const nr=nearest(h)[0];
+  const [x1,y1]=P(h.lat,h.lon),[x2,y2]=P(nr.s.lat,nr.s.lon);
+  Object.entries({x1,y1,x2,y2}).forEach(([k,v])=>linkLine.setAttribute(k,v));
+  linkLine.setAttribute("visibility","visible");
+  linkText.setAttribute("x",(x1+x2)/2);linkText.setAttribute("y",(y1+y2)/2-8);
+  linkText.textContent=`${Math.round(nr.d/10)*10}m · 도보 약 ${Math.max(1,Math.round(nr.d/80))}분`;
+  linkText.setAttribute("visibility","visible");
+  svg.appendChild(linkLine);svg.appendChild(linkText);
+  Object.values(pins).forEach(p=>svg.appendChild(p.g));
+  if(fromMap)cards[current].scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+select(1,false);
+document.getElementById("home-link").hidden=false;
+</script>
+</body>
+</html>
