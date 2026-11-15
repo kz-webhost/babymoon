@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>교토 옷가게 지도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 왼쪽 도식 지도(시조~오이케 확대), 오른쪽 매장 목록 / 좁은 화면에서는 위아래로 */
+:root{
+  --bg:#F3F3F0; --surface:#FFFFFF; --ink:#1D2129; --muted:#646973; --line:#D8DAD4;
+  --accent:#2F4A6B; --brand:#2F5D50; --select:#A0522D; --dept:#6B5B95; --hotel:#9AA1AB;
+  --river:#BFD6E6; --street:#E4E5E0;
+  --hankyu:#7A2E3A; --subway:#2F8A57; --tozai:#C1782F; --keihan:#2E6FB0;
+  --font-display:"Gowun Batang", "Noto Serif KR", serif;
+  --font-body:"Noto Sans KR", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14171D; --surface:#1B2028; --ink:#E6E8EB; --muted:#9AA0AA; --line:#2E3440;
+  --accent:#8FB0DA; --brand:#6FBFA6; --select:#E0A07A; --dept:#B3A4DB; --hotel:#5E6672;
+  --river:#24425A; --street:#252C36;
+  --hankyu:#C97986; --subway:#5FBE88; --tozai:#E0A266; --keihan:#6FA6DE; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14171D; --surface:#1B2028; --ink:#E6E8EB; --muted:#9AA0AA; --line:#2E3440;
+  --accent:#8FB0DA; --brand:#6FBFA6; --select:#E0A07A; --dept:#B3A4DB; --hotel:#5E6672;
+  --river:#24425A; --street:#252C36;
+  --hankyu:#C97986; --subway:#5FBE88; --tozai:#E0A266; --keihan:#6FA6DE; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 40px}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--font-display);font-size:1.75rem;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);font-size:.9rem;max-width:70ch}
+.home{color:var(--accent);font-size:.85rem;text-decoration:none}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.filters button{font:inherit;font-size:.84rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:4px 14px;border-radius:999px;cursor:pointer}
+.filters button.on{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.filters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;position:sticky;top:max(12px, env(safe-area-inset-top, 0px))}
+@media (max-width:860px){.mapbox{position:static}}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);padding:8px 4px 2px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:18px;height:4px;border-radius:2px;display:inline-block}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.note{font-size:.75rem;color:var(--muted);padding:4px}
+.list{display:flex;flex-direction:column;gap:8px}
+.group-title{font-size:.8rem;color:var(--muted);font-weight:700;margin:8px 2px 0;letter-spacing:.04em}
+.card{user-select:text;-webkit-user-select:text;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px}
+.card:hover{border-color:var(--accent)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.num{width:26px;height:26px;border-radius:50%;color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:.8rem;font-variant-numeric:tabular-nums}
+.card h3{margin:0;font-size:.98rem;font-weight:700;cursor:text}
+.card .jp{font-size:.76rem;color:var(--muted)}
+.card .sub{font-size:.8rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.detail{margin-top:8px;font-size:.84rem;display:none}
+.card[aria-pressed="true"] .detail{display:block}
+.detail ul{margin:4px 0 6px;padding-left:18px}
+.detail a{color:var(--accent)}
+.st-label{font-size:11px;fill:var(--ink);font-family:var(--font-body);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
+.street-label{font-size:10px;fill:var(--muted);font-family:var(--font-body);letter-spacing:.04em}
+.s-num{font-size:10.5px;font-weight:700;fill:#fff;font-family:var(--font-body);pointer-events:none}
+.edge-label{font-size:11px;font-weight:700;font-family:var(--font-body);paint-order:stroke;stroke:var(--surface);stroke-width:3px}
+.pin{cursor:pointer}
+.pin.dim{opacity:.18}
+.card.dim{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="../../index.html">‹ 태교여행 준비 홈</a>
+    <h1>교토 옷가게 지도</h1>
+    <p>KAPITAL, 나나미카, 포터 클래식 같은 브랜드 직영점과 아나토미카, 로프트맨, 빔즈 같은 편집숍을 역과 함께 표시했어요. 대부분 시조~오이케 사이에 모여 있어서 걸어서 돌기 좋아요. 번호나 목록을 누르면 가장 가까운 역까지 직선거리가 나와요.</p>
+    <div class="filters" role="group" aria-label="매장 종류">
+      <button type="button" class="on" data-f="all" aria-pressed="true">전체</button>
+      <button type="button" data-f="brand" aria-pressed="false">브랜드 직영점</button>
+      <button type="button" data-f="select" aria-pressed="false">편집숍</button>
+      <button type="button" data-f="dept" aria-pressed="false">백화점·쇼핑몰</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="mapbox">
+      <svg id="map" viewBox="0 0 800 700" role="img" aria-label="교토 시조~오이케 일대 옷가게와 역 위치 도식 지도"></svg>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--brand)"></i>브랜드 직영점</span>
+        <span><i class="dot" style="background:var(--select)"></i>편집숍</span>
+        <span><i class="dot" style="background:var(--dept)"></i>백화점·쇼핑몰</span>
+        <span><i class="dot" style="background:var(--hotel)"></i>숙소 후보</span>
+        <span><i class="sw" style="background:var(--hankyu)"></i>한큐</span>
+        <span><i class="sw" style="background:var(--subway)"></i>가라스마선</span>
+        <span><i class="sw" style="background:var(--tozai)"></i>도자이선</span>
+        <span><i class="sw" style="background:var(--keihan)"></i>게이한</span>
+      </div>
+      <div class="note">거리와 노선은 실제 위치를 단순하게 그린 도식이에요. 매장 위치는 주소의 동네(町) 기준이라 수십 m 차이가 날 수 있어요. 정확한 위치와 영업시간은 각 매장의 "구글 지도" 링크로 확인하세요.</div>
+    </div>
+    <div class="list" id="shopList"></div>
+  </div>
+</div>
+
+<script>
+const B={latMin:34.9990,latMax:35.0128,lonMin:135.7535,lonMax:135.7745};
+const W=800,H=700,PAD=24;
+const kx=Math.cos(35*Math.PI/180);
+const spanX=(B.lonMax-B.lonMin)*kx, spanY=(B.latMax-B.latMin);
+const s=Math.min((W-2*PAD)/spanX,(H-2*PAD)/spanY);
+const ox=(W-spanX*s)/2, oy=(H-spanY*s)/2;
+const P=(lat,lon)=>[ox+(lon-B.lonMin)*kx*s, oy+(B.latMax-lat)*s];
+const inside=(lat,lon)=>lat>=B.latMin&&lat<=B.latMax&&lon>=B.lonMin&&lon<=B.lonMax;
+
+const stations=[
+  {name:"교토가와라마치 (한큐)",lat:35.00376,lon:135.76961,dx:8,dy:18,anchor:"start"},
+  {name:"가라스마 (한큐) / 시조 (지하철)",lat:35.00369,lon:135.76000,dx:-10,dy:18,anchor:"end"},
+  {name:"기온시조 (게이한)",lat:35.00269,lon:135.77160,dx:-10,dy:16,anchor:"end"},
+  {name:"가라스마오이케 (지하철)",lat:35.01090,lon:135.75960,dx:-10,dy:-8,anchor:"end"},
+  {name:"교토시야쿠쇼마에 (도자이선)",lat:35.01090,lon:135.76887,dx:0,dy:-12,anchor:"middle"},
+  {name:"산조 (게이한)",lat:35.00902,lon:135.77233,dx:-10,dy:16,anchor:"end"},
+];
+const hotels=[[35.00590,135.76997],[35.00252,135.76970],[35.0000,135.7652],[35.00662,135.75683],[34.99848,135.77370],[35.0010,135.7699],[35.01060,135.77082]];
+
+const COLORS={brand:"var(--brand)",select:"var(--select)",dept:"var(--dept)"};
+const TYPES={brand:"브랜드 직영점",select:"편집숍",dept:"백화점·쇼핑몰"};
+const shops=[
+  // 브랜드 직영점
+  {id:"kapital",t:"brand",name:"KAPITAL 교토 (K.K-POPPO STORE)",jp:"キャピタル",lat:35.0064,lon:135.7662,
+   addr:"中京区御幸町通六角下ル伊勢屋町352",station:"한큐 교토가와라마치역 도보 약 8분",
+   tags:["데님","보로","오카야마 고지마 브랜드"],pts:["11:00~20:00 (공식 매장 목록 기준)","데라마치·신쿄고쿠 상점가 바로 옆"],q:"KAPITAL K.K-POPPO STORE 京都"},
+  {id:"nanamica",t:"brand",name:"nanamica 교토",jp:"ナナミカ",lat:35.00553,lon:135.75960,
+   addr:"中京区手洗水町647",station:"지하철 시조역 / 한큐 가라스마역 도보 약 3분",
+   tags:["고어텍스","아웃도어 캐주얼","2025년 4월 개점"],pts:["11:00~19:00 (WWD 기준)","간사이 두 번째 직영점"],q:"nanamica KYOTO"},
+  {id:"porter",t:"brand",name:"Porter Classic 교토",jp:"ポータークラシック",lat:35.0052,lon:135.7633,
+   addr:"中京区柳馬場通錦上る十文字町453-6",station:"지하철 시조역 도보 약 6분",
+   tags:["가방","재킷","2층 마치야 매장"],pts:["11:00~20:00 (공식 사이트 기준)","니시키 시장에서 도보 1분","간사이 첫 직영점 (2020년 3월)"],q:"Porter Classic Kyoto"},
+  {id:"45r",t:"brand",name:"45R 교토",jp:"フォーティファイブアール",lat:35.0088,lon:135.7624,
+   addr:"中京区三条通高倉東入桝屋町61",station:"지하철 가라스마오이케역 도보 약 5분",
+   tags:["인디고","데님","니트"],pts:["공식 사이트에서 '서쪽의 플래그십'으로 소개","산조도리 쇼핑 거리"],q:"45R KYOTO"},
+  {id:"issey",t:"brand",name:"ISSEY MIYAKE KYOTO",jp:"イッセイ ミヤケ",lat:35.0083,lon:135.7632,
+   addr:"中京区柳馬場通三条下ル槌屋町89",station:"지하철 가라스마오이케역 도보 약 7분",
+   tags:["플리츠 플리즈","옴므 플리세","마치야 매장"],pts:["11:00~20:00 (WWD 기준)","132년 된 마치야, 갤러리 KURA 같이 있음"],q:"ISSEY MIYAKE KYOTO"},
+  {id:"apoc",t:"brand",name:"A-POC ABLE ISSEY MIYAKE 교토",jp:"エイポック エイブル",lat:35.0093,lon:135.7650,
+   addr:"中京区富小路通三条上ル福長町106",station:"지하철 교토시야쿠쇼마에역 도보 약 6분",
+   tags:["이세이 미야케 신라인"],pts:["2021년 9월 개점","ISSEY MIYAKE KYOTO와 걸어서 3분"],q:"A-POC ABLE ISSEY MIYAKE KYOTO"},
+  {id:"apc",t:"brand",name:"A.P.C. 교토",jp:"アー・ペー・セー",lat:35.0037,lon:135.7608,
+   addr:"下京区四条通烏丸東入長刀鉾町10 1F",station:"한큐 가라스마역 / 지하철 시조역 도보 1분",
+   tags:["프렌치 베이식","데님"],pts:["시조도리 대로변"],q:"A.P.C. 京都"},
+  // 편집숍
+  {id:"loftman",t:"select",name:"LOFTMAN COOP 교토 (로프트맨)",jp:"ロフトマン",lat:35.0055,lon:135.7672,
+   addr:"中京区寺町通蛸薬師下ル円福寺前町280",station:"한큐 교토가와라마치역 도보 약 5분",
+   tags:["교토에서 시작한 편집숍","아메카지·아웃도어","데라마치 상점가"],
+   pts:["같은 거리에 LOFTMAN COOP 'Ohana (281번지), LOFTMAN B.D. (273번지)도 모여 있어요","주소는 소개 사이트 기준이라 방문 전에 공식 사이트에서 확인하세요"],q:"LOFTMAN COOP KYOTO"},
+  {id:"anatomica",t:"select",name:"ANATOMICA 교토",jp:"アナトミカ京都",lat:35.0098,lon:135.7566,
+   addr:"中京区姉小路通釜座西入ル津軽町782-3",station:"지하철 가라스마오이케역 도보 약 6분",
+   tags:["워크웨어","클래식","마치야 매장"],pts:["2024년 9월 개점, 약 100년 된 마치야","전화 075-708-5068 (공식 사이트)"],q:"ANATOMICA KYOTO"},
+  {id:"graphpaper",t:"select",name:"Graphpaper 교토",jp:"グラフペーパー京都",lat:35.0068,lon:135.7655,
+   addr:"中京区六角通富小路東入大黒町88-1",station:"한큐 교토가와라마치역 도보 약 6분",
+   tags:["미니멀","편집숍 겸 자체 브랜드"],pts:["수요일 휴무, 12:00부터 영업 (닫는 시간은 출처마다 19~20시)"],q:"Graphpaper Kyoto"},
+  {id:"fascinate",t:"select",name:"FASCINATE 교토",jp:"ファシネイト",lat:35.0045,lon:135.7662,
+   addr:"中京区大日町416-5 御幸町スクエアDECO III 1F",station:"한큐 교토가와라마치역 도보 약 2분",
+   tags:["디자이너 브랜드 편집숍"],pts:["가와라마치역 바로 근처"],q:"FASCINATE KYOTO"},
+  {id:"beams",t:"select",name:"BEAMS JAPAN 교토 (신푸칸)",jp:"ビームス ジャパン 京都",lat:35.0100,lon:135.7593,
+   addr:"中京区烏丸通姉小路下ル場之町586-2 新風館1F",station:"지하철 가라스마오이케역 바로 앞",
+   tags:["일본 브랜드·공예","교토 한정품"],pts:["2020년 정보 기준이라 지금도 영업 중인지 확인 필요","2026년 3월 기온에 BEAMS JAPAN 기온점이 새로 열렸다는 보도가 있어요 (주소 미확인)"],q:"ビームス ジャパン 京都 新風館"},
+  {id:"kasokeki",t:"select",name:"KA SO KE KI",jp:"カソケキ",lat:35.0033,lon:135.7672,approx:true,
+   addr:"GOOD NATURE STATION 3F (시조 가와라마치)",station:"한큐 교토가와라마치역 도보 약 3분",
+   tags:["일본 공예·라이프스타일 편집숍"],pts:["굿 네이처 스테이션 건물 3층","정확한 주소는 확인하지 못했어요"],q:"KA SO KE KI 京都"},
+  // 백화점·쇼핑몰
+  {id:"bal",t:"dept",name:"교토 BAL",jp:"京都BAL",lat:35.00679,lon:135.76958,
+   addr:"中京区河原町通三条下る山崎町251",station:"한큐 교토가와라마치역 도보 약 5분",
+   tags:["편집숍·디자이너 브랜드 다수"],pts:["visvim(F.I.L. KYOTO) 팝업이 열린 적 있어요 (2026년 4월)"],q:"京都BAL"},
+  {id:"fujii",t:"dept",name:"후지이 다이마루",jp:"藤井大丸",lat:35.00318,lon:135.76662,
+   addr:"下京区寺町通四条下ル",station:"한큐 교토가와라마치역 도보 약 2분",
+   tags:["캐주얼·편집숍 브랜드 다수"],pts:["젊은 층 브랜드가 많은 백화점"],q:"藤井大丸"},
+  {id:"takashimaya",t:"dept",name:"다카시마야 교토점",jp:"京都髙島屋",lat:35.00307,lon:135.76843,
+   addr:"下京区四条通河原町西入真町52",station:"한큐 교토가와라마치역 바로 앞",
+   tags:["럭셔리·남성복"],pts:["면세 카운터 이용 가능"],q:"京都髙島屋"},
+  {id:"daimaru",t:"dept",name:"다이마루 교토점",jp:"大丸京都店",lat:35.00437,lon:135.76190,
+   addr:"下京区四条通高倉西入",station:"한큐 가라스마역 / 지하철 시조역 바로 앞",
+   tags:["럭셔리·남성복"],pts:["면세 카운터 이용 가능"],q:"大丸京都店"},
+  {id:"porta",t:"dept",name:"BEAUTY&YOUTH UNITED ARROWS 교토 포르타",jp:"ビューティ&ユース 京都ポルタ",lat:34.9862,lon:135.7590,
+   addr:"下京区東塩小路町902 京都ポルタ",station:"교토역 지하상가",
+   tags:["유나이티드 애로우즈 계열"],pts:["교토역 지하상가 포르타 안. 마지막 날 들르기 좋아요"],q:"BEAUTY&YOUTH UNITED ARROWS 京都ポルタ"},
+];
+shops.forEach((sh,i)=>sh.n=i+1);
+
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("map");
+const el=(t,a={},parent=svg)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);parent.appendChild(e);return e;};
+const line=(pts,attrs)=>el("polyline",Object.assign({points:pts.map(p=>P(p[0],p[1]).join(",")).join(" "),fill:"none"},attrs));
+const label=(x,y,txt,cls,attrs={},parent=svg)=>{const t=el("text",Object.assign({x,y,class:cls},attrs),parent);t.textContent=txt;return t;};
+
+el("rect",{x:0,y:0,width:W,height:H,fill:"var(--surface)"});
+
+// 도로 (대략)
+const H_ST=[["오이케도리",35.0108],["아네야코지",35.0098],["산조도리",35.0089],["롯카쿠",35.0068],["니시키코지",35.0050],["시조도리",35.0036],["붓코지",35.0003]];
+const V_ST=[["가라스마",135.7596],["다카쿠라",135.7614],["야나기노반바",135.7633],["도미노코지",135.7650],["고코마치",135.7662],["데라마치",135.7672],["가와라마치",135.7690]];
+H_ST.forEach(([n,la])=>{line([[la,B.lonMin],[la,135.7715]],{stroke:"var(--street)","stroke-width":["오이케도리","산조도리","시조도리"].includes(n)?8:4});});
+V_ST.forEach(([n,lo])=>{line([[B.latMax,lo],[B.latMin,lo]],{stroke:"var(--street)","stroke-width":["가라스마","가와라마치"].includes(n)?8:4});});
+// 가모강
+line([[B.latMax,135.7726],[35.0090,135.7717],[35.0035,135.7709],[34.9995,135.7693],[B.latMin,135.7691]],{stroke:"var(--river)","stroke-width":16,"stroke-linecap":"round","stroke-linejoin":"round"});
+H_ST.forEach(([n,la])=>{const [x,y]=P(la,B.lonMin);label(x+4,y-5,n,"street-label");});
+V_ST.forEach(([n,lo],i)=>{const [x,y]=P(B.latMin,lo);label(x+3,y-6-(i%2)*12,n,"street-label");});
+{const [x,y]=P(35.0060,135.7713);label(x+10,y,"가모강","street-label");}
+{const [x,y]=P(35.0065,135.7669);label(x+3,y-4,"신쿄고쿠 상점가 ↕","street-label");}
+
+// 철도 (도식)
+line([[35.00369,B.lonMin],[35.00369,135.76000],[35.00376,135.76961]],{stroke:"var(--hankyu)","stroke-width":4});
+line([[B.latMax,135.7598],[B.latMin,135.7596]],{stroke:"var(--subway)","stroke-width":4});
+line([[35.0110,B.lonMin],[35.01090,135.75960],[35.01090,135.76887],[35.00902,135.77233],[35.0092,B.lonMax]],{stroke:"var(--tozai)","stroke-width":4,"stroke-linejoin":"round"});
+line([[B.latMax,135.7726],[35.00902,135.77233],[35.00269,135.77160],[B.latMin,135.7700]],{stroke:"var(--keihan)","stroke-width":4,"stroke-linejoin":"round"});
+
+hotels.forEach(([la,lo])=>{if(!inside(la,lo))return;const [x,y]=P(la,lo);el("circle",{cx:x,cy:y,r:4.5,fill:"var(--hotel)",stroke:"var(--surface)","stroke-width":1.5});});
+stations.forEach(st=>{const [x,y]=P(st.lat,st.lon);
+  el("circle",{cx:x,cy:y,r:7,fill:"var(--surface)",stroke:"var(--ink)","stroke-width":2.4});
+  label(x+st.dx,y+st.dy,st.name,"st-label",{"text-anchor":st.anchor});});
+
+const R=6371000,rad=d=>d*Math.PI/180;
+const dist=(a,b)=>{const dLa=rad(b.lat-a.lat),dLo=rad(b.lon-a.lon);const h=Math.sin(dLa/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
+const nearest=p=>stations.map(s=>({s,d:dist(p,s)})).sort((a,b)=>a.d-b.d);
+const linkLine=el("line",{stroke:"var(--ink)","stroke-width":2,"stroke-dasharray":"4 4",visibility:"hidden"});
+const linkText=el("text",{class:"st-label","text-anchor":"middle",visibility:"hidden"});
+
+const pins={};
+shops.forEach(sh=>{
+  const g=el("g",{class:"pin",tabindex:"0",role:"button","aria-label":sh.name});
+  const col=COLORS[sh.t];
+  if(inside(sh.lat,sh.lon)){
+    const [x,y]=P(sh.lat,sh.lon);
+    const c=el("circle",{cx:x,cy:y,r:11,fill:col,stroke:"var(--surface)","stroke-width":2},g);
+    label(x,y+4,sh.n,"s-num",{"text-anchor":"middle"},g);
+    pins[sh.id]={g,c,x,y};
+  }else{
+    const [tx,ty]=P(sh.lat,sh.lon);const cx0=W/2,cy0=H/2;const dx=tx-cx0,dy=ty-cy0;
+    const k=Math.min((W/2-28)/Math.abs(dx||1e-9),(H/2-28)/Math.abs(dy||1e-9));
+    const x=cx0+dx*k,y=cy0+dy*k,ang=Math.atan2(dy,dx)*180/Math.PI,len=Math.hypot(dx,dy);
+    const c=el("circle",{cx:x,cy:y,r:11,fill:col,stroke:"var(--surface)","stroke-width":2},g);
+    el("path",{d:"M0,-6 L10,0 L0,6 Z",fill:col,transform:`translate(${x+dx/len*15},${y+dy/len*15}) rotate(${ang})`},g);
+    label(x,y+4,sh.n,"s-num",{"text-anchor":"middle"},g);
+    const t=label(x+16,y+4,`교토역 방향 · ${sh.name.split(" ")[0]}`,"edge-label",{},g);t.style.fill=col;
+    pins[sh.id]={g,c,x,y,outside:true};
+  }
+  g.addEventListener("click",()=>select(sh.id,true));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(sh.id,true);}});
+});
+
+const list=document.getElementById("shopList");
+const cards={};
+Object.entries(TYPES).forEach(([t,title])=>{
+  const h=document.createElement("div");h.className="group-title";h.dataset.t=t;h.textContent=title;list.appendChild(h);
+  shops.filter(sh=>sh.t===t).forEach(sh=>{
+    const nr=nearest(sh)[0];
+    const mapsUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(sh.q);
+    const b=document.createElement("div");b.className="card";b.tabIndex=0;b.setAttribute("role","button");b.setAttribute("aria-pressed","false");b.dataset.t=t;
+    b.innerHTML=`<span class="num" style="background:${COLORS[t]}">${sh.n}</span><div style="min-width:0">
+      <h3>${sh.name}</h3><div class="jp">${sh.jp}</div><div class="sub">${sh.station}${sh.approx?" · 추정 위치":""}</div>
+      <div class="meta">${sh.tags.map(x=>`<span class="chip">${x}</span>`).join("")}</div>
+      <div class="detail"><ul><li>${sh.addr}</li>${sh.pts.map(p=>`<li>${p}</li>`).join("")}</ul>
+        ${pins[sh.id].outside?"":`<div>지도상 가장 가까운 역 (직선거리): ${nr.s.name.split(" (")[0]} ${Math.round(nr.d/10)*10}m</div>`}
+        <a href="${mapsUrl}" target="_blank" rel="noopener">구글 지도에서 보기 ↗</a></div></div>`;
+    b.addEventListener("click",e=>{if(e.target.closest("a"))return;if(window.getSelection&&window.getSelection().toString())return;select(sh.id,false);});
+    b.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===b){e.preventDefault();select(sh.id,false);}});
+    list.appendChild(b);cards[sh.id]=b;
+  });
+});
+
+let current=null;
+function select(id,fromMap){
+  current=(current===id&&!fromMap)?null:id;
+  shops.forEach(sh=>{const on=sh.id===current;cards[sh.id].setAttribute("aria-pressed",on);pins[sh.id].c.setAttribute("r",on?15:11);});
+  linkLine.setAttribute("visibility","hidden");linkText.setAttribute("visibility","hidden");
+  if(current==null)return;
+  const sh=shops.find(x=>x.id===current),p=pins[current];
+  if(!p.outside){
+    const nr=nearest(sh)[0];const [x2,y2]=P(nr.s.lat,nr.s.lon);
+    Object.entries({x1:p.x,y1:p.y,x2,y2}).forEach(([k,v])=>linkLine.setAttribute(k,v));
+    linkText.setAttribute("x",(p.x+x2)/2);linkText.setAttribute("y",(p.y+y2)/2-8);
+    linkText.textContent=`${Math.round(nr.d/10)*10}m · 도보 약 ${Math.max(1,Math.round(nr.d/80))}분`;
+    linkLine.setAttribute("visibility","visible");linkText.setAttribute("visibility","visible");
+    svg.appendChild(linkLine);svg.appendChild(linkText);
+  }
+  svg.appendChild(p.g);
+  if(fromMap)cards[current].scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+
+document.querySelectorAll(".filters button").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".filters button").forEach(x=>{x.classList.toggle("on",x===btn);x.setAttribute("aria-pressed",x===btn);});
+  const f=btn.dataset.f;
+  shops.forEach(sh=>{const show=f==="all"||sh.t===f;pins[sh.id].g.classList.toggle("dim",!show);cards[sh.id].classList.toggle("dim",!show);});
+  document.querySelectorAll(".group-title").forEach(h=>h.hidden=!(f==="all"||h.dataset.t===f));
+}));
+select("kapital",false);
+</script>
+</body>
+</html>
